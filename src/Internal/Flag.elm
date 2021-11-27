@@ -34,6 +34,9 @@ module Internal.Flag exposing
     , heightContent
     , heightFill
     , heightTextAreaContent
+    , highContrast
+    , highContrastFocus
+    , highContrastHover
     , hover
     , letterSpacing
     , merge
@@ -338,3 +341,15 @@ darkHover =
 
 darkFocus =
     flag 51
+
+
+highContrast =
+    flag 52
+
+
+highContrastHover =
+    flag 53
+
+
+highContrastFocus =
+    flag 54

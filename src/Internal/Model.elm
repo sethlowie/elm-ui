@@ -207,6 +207,9 @@ type PseudoClass
     | Dark
     | DarkHover
     | DarkFocus
+    | HighContrast
+    | HighContrastHover
+    | HighContrastFocus
 
 
 {-| -}
@@ -2130,6 +2133,9 @@ renderRoot optionList attributes child =
 
                 DarkTheme ->
                     Class Flag.dark "dark"
+
+                HighContrastTheme ->
+                    Class Flag.highContrast "high-contrast"
     in
     element asEl div (theme :: attributes) (Unkeyed [ child ])
         |> toHtml embedStyle
@@ -2165,6 +2171,7 @@ type Option
 type Theme
     = LightTheme
     | DarkTheme
+    | HighContrastTheme
 
 
 type alias FocusStyle =
@@ -2690,6 +2697,29 @@ renderStyle options maybePseudo selector props =
 
                 DarkHover ->
                     [ ".dark " ++ selector ++ "-dark-hv:hover {" ++ List.foldl (renderProps False) "" props ++ "\n}" ]
+
+                HighContrastFocus ->
+                    let
+                        renderedProps =
+                            List.foldl (renderProps False) "" props
+                    in
+                    [ ".high-contrast " ++ selector ++ "-fs:focus {" ++ renderedProps ++ "\n}"
+                    , ("." ++ classes.any ++ ":focus " ++ selector ++ "-fs  {")
+                        ++ renderedProps
+                        ++ "\n}"
+                    , (".high-contrast " ++ selector ++ "-fs:focus-within {")
+                        ++ renderedProps
+                        ++ "\n}"
+                    , (".ui-slide-bar:focus + " ++ Internal.Style.dot classes.any ++ " .focusable-thumb" ++ selector ++ "-fs {")
+                        ++ renderedProps
+                        ++ "\n}"
+                    ]
+
+                HighContrast ->
+                    [ ".high-contrast " ++ selector ++ "-high-contrast {" ++ List.foldl (renderProps False) "" props ++ "\n}" ]
+
+                HighContrastHover ->
+                    [ ".high-contrast " ++ selector ++ "-high-contrast-hv:hover {" ++ List.foldl (renderProps False) "" props ++ "\n}" ]
 
                 Hover ->
                     case options.hover of
@@ -3342,6 +3372,15 @@ getStyleName style =
 
                         DarkFocus ->
                             "dark-fs"
+
+                        HighContrast ->
+                            "high-contrast"
+
+                        HighContrastHover ->
+                            "high-contrast-hv"
+
+                        HighContrastFocus ->
+                            "high-contrast-fs"
             in
             List.map
                 (\sty ->

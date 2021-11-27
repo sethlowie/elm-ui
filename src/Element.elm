@@ -22,7 +22,7 @@ module Element exposing
     , modular
     , map, mapAttribute
     , html, htmlAttribute
-    , dark, darkFocus, darkHover, darkTheme, lightTheme
+    , dark, darkFocus, darkHover, darkTheme, highContrast, highContrastFocus, highContrastHover, lightTheme
     )
 
 {-|
@@ -488,6 +488,11 @@ lightTheme =
 darkTheme : Option
 darkTheme =
     Internal.RenderTheme Internal.DarkTheme
+
+
+highContrastTheme : Option
+highContrastTheme =
+    Internal.RenderTheme Internal.HighContrastTheme
 
 
 {-| -}
@@ -1694,6 +1699,30 @@ darkFocus : List Decoration -> Attribute msg
 darkFocus decs =
     Internal.StyleClass Flag.darkFocus <|
         Internal.PseudoSelector Internal.DarkFocus
+            (Internal.unwrapDecorations decs)
+
+
+{-| -}
+highContrast : List Decoration -> Attribute msg
+highContrast decs =
+    Internal.StyleClass Flag.highContrast <|
+        Internal.PseudoSelector Internal.HighContrast
+            (Internal.unwrapDecorations decs)
+
+
+{-| -}
+highContrastHover : List Decoration -> Attribute msg
+highContrastHover decs =
+    Internal.StyleClass Flag.highContrastHover <|
+        Internal.PseudoSelector Internal.HighContrastHover
+            (Internal.unwrapDecorations decs)
+
+
+{-| -}
+highContrastFocus : List Decoration -> Attribute msg
+highContrastFocus decs =
+    Internal.StyleClass Flag.highContrastFocus <|
+        Internal.PseudoSelector Internal.HighContrastFocus
             (Internal.unwrapDecorations decs)
 
 
