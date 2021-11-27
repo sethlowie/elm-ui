@@ -27,6 +27,7 @@ module Internal.Model exposing
     , Shadow
     , Spacing(..)
     , Style(..)
+    , Theme(..)
     , TransformComponent(..)
     , Transformation(..)
     , VAlign(..)
@@ -203,6 +204,9 @@ type PseudoClass
     = Focus
     | Hover
     | Active
+    | Dark
+    | DarkHover
+    | DarkFocus
 
 
 {-| -}
@@ -2118,8 +2122,16 @@ renderRoot optionList attributes child =
 
                 _ ->
                     StaticRootAndDynamic options
+
+        theme =
+            case options.theme of
+                LightTheme ->
+                    Class Flag.dark ""
+
+                DarkTheme ->
+                    Class Flag.dark "dark"
     in
-    element asEl div attributes (Unkeyed [ child ])
+    element asEl div (theme :: attributes) (Unkeyed [ child ])
         |> toHtml embedStyle
 
 
@@ -2133,6 +2145,7 @@ type alias OptionRecord =
     { hover : HoverSetting
     , focus : FocusStyle
     , mode : RenderMode
+    , theme : Theme
     }
 
 
@@ -2146,6 +2159,12 @@ type Option
     = HoverOption HoverSetting
     | FocusStyleOption FocusStyle
     | RenderModeOption RenderMode
+    | RenderTheme Theme
+
+
+type Theme
+    = LightTheme
+    | DarkTheme
 
 
 type alias FocusStyle =
@@ -2294,6 +2313,14 @@ optionsToRecord options =
     let
         combine opt record =
             case opt of
+                RenderTheme theme ->
+                    case record.theme of
+                        Nothing ->
+                            { record | theme = Just theme }
+
+                        _ ->
+                            record
+
                 HoverOption hoverable ->
                     case record.hover of
                         Nothing ->
@@ -2340,6 +2367,13 @@ optionsToRecord options =
 
                     Just actualMode ->
                         actualMode
+            , theme =
+                case record.theme of
+                    Nothing ->
+                        LightTheme
+
+                    Just theme ->
+                        theme
             }
     in
     andFinally <|
@@ -2347,6 +2381,7 @@ optionsToRecord options =
             { hover = Nothing
             , focus = Nothing
             , mode = Nothing
+            , theme = Nothing
             }
             options
 
@@ -2633,6 +2668,29 @@ renderStyle options maybePseudo selector props =
 
         Just pseudo ->
             case pseudo of
+                DarkFocus ->
+                    let
+                        renderedProps =
+                            List.foldl (renderProps False) "" props
+                    in
+                    [ ".dark " ++ selector ++ "-fs:focus {" ++ renderedProps ++ "\n}"
+                    , ("." ++ classes.any ++ ":focus " ++ selector ++ "-fs  {")
+                        ++ renderedProps
+                        ++ "\n}"
+                    , (".dark " ++ selector ++ "-fs:focus-within {")
+                        ++ renderedProps
+                        ++ "\n}"
+                    , (".ui-slide-bar:focus + " ++ Internal.Style.dot classes.any ++ " .focusable-thumb" ++ selector ++ "-fs {")
+                        ++ renderedProps
+                        ++ "\n}"
+                    ]
+
+                Dark ->
+                    [ ".dark " ++ selector ++ "-dark {" ++ List.foldl (renderProps False) "" props ++ "\n}" ]
+
+                DarkHover ->
+                    [ ".dark " ++ selector ++ "-dark-hv:hover {" ++ List.foldl (renderProps False) "" props ++ "\n}" ]
+
                 Hover ->
                     case options.hover of
                         NoHover ->
@@ -3275,6 +3333,15 @@ getStyleName style =
 
                         Active ->
                             "act"
+
+                        Dark ->
+                            "dark"
+
+                        DarkHover ->
+                            "dark-hv"
+
+                        DarkFocus ->
+                            "dark-fs"
             in
             List.map
                 (\sty ->

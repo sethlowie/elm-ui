@@ -22,6 +22,7 @@ module Element exposing
     , modular
     , map, mapAttribute
     , html, htmlAttribute
+    , dark, darkFocus, darkHover, darkTheme, lightTheme
     )
 
 {-|
@@ -215,7 +216,7 @@ You'll also need to retrieve the initial window size. You can either use [`Brows
 import Html exposing (Html)
 import Html.Attributes
 import Internal.Flag as Flag exposing (Flag)
-import Internal.Model as Internal
+import Internal.Model as Internal exposing (Theme)
 import Internal.Style exposing (classes)
 
 
@@ -477,6 +478,16 @@ If you're embedding multiple elm-ui `layout` elements, you need to guarantee tha
 noStaticStyleSheet : Option
 noStaticStyleSheet =
     Internal.RenderModeOption Internal.NoStaticStyleSheet
+
+
+lightTheme : Option
+lightTheme =
+    Internal.RenderTheme Internal.LightTheme
+
+
+darkTheme : Option
+darkTheme =
+    Internal.RenderTheme Internal.DarkTheme
 
 
 {-| -}
@@ -1660,6 +1671,30 @@ modular normal ratio rescale =
 
     else
         normal * ratio ^ (toFloat rescale - 1)
+
+
+{-| -}
+dark : List Decoration -> Attribute msg
+dark decs =
+    Internal.StyleClass Flag.dark <|
+        Internal.PseudoSelector Internal.Dark
+            (Internal.unwrapDecorations decs)
+
+
+{-| -}
+darkHover : List Decoration -> Attribute msg
+darkHover decs =
+    Internal.StyleClass Flag.darkHover <|
+        Internal.PseudoSelector Internal.DarkHover
+            (Internal.unwrapDecorations decs)
+
+
+{-| -}
+darkFocus : List Decoration -> Attribute msg
+darkFocus decs =
+    Internal.StyleClass Flag.darkFocus <|
+        Internal.PseudoSelector Internal.DarkFocus
+            (Internal.unwrapDecorations decs)
 
 
 {-| -}

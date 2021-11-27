@@ -16,6 +16,9 @@ module Internal.Flag exposing
     , centerX
     , centerY
     , cursor
+    , dark
+    , darkFocus
+    , darkHover
     , flag
     , focus
     , fontAlignment
@@ -323,3 +326,15 @@ heightTextAreaContent =
 
 fontVariant =
     flag 48
+
+
+dark =
+    flag 49
+
+
+darkHover =
+    flag 50
+
+
+darkFocus =
+    flag 51
