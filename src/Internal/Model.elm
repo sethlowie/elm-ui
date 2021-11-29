@@ -4,7 +4,6 @@ module Internal.Model exposing
     , Attribute(..)
     , Axis(..)
     , Children(..)
-    , Color(..)
     , Description(..)
     , Element(..)
     , EmbedStyle(..)
@@ -108,6 +107,7 @@ module Internal.Model exposing
 
 {-| -}
 
+import Color exposing (Color, fromRgba, rgba, toCssString, toRgba)
 import Html
 import Html.Attributes
 import Html.Keyed
@@ -366,11 +366,6 @@ type Location
     | OnLeft
     | InFront
     | Behind
-
-
-{-| -}
-type Color
-    = Rgba Float Float Float Float
 
 
 type NodeName
@@ -2199,8 +2194,8 @@ rootStyle =
             , SansSerif
             ]
     in
-    [ StyleClass Flag.bgColor (Colored ("bg-" ++ formatColorClass (Rgba 1 1 1 0)) "background-color" (Rgba 1 1 1 0))
-    , StyleClass Flag.fontColor (Colored ("fc-" ++ formatColorClass (Rgba 0 0 0 1)) "color" (Rgba 0 0 0 1))
+    [ StyleClass Flag.bgColor (Colored ("bg-" ++ formatColorClass (rgba 1 1 1 0)) "background-color" (rgba 1 1 1 0))
+    , StyleClass Flag.fontColor (Colored ("fc-" ++ formatColorClass (rgba 0 0 0 1)) "color" (rgba 0 0 0 1))
     , StyleClass Flag.fontSize (FontSize 20)
     , StyleClass Flag.fontFamily <|
         FontFamily (List.foldl renderFontClassName "font-" families)
@@ -2307,7 +2302,7 @@ focusDefaultStyle =
     , shadow =
         Just
             { color =
-                Rgba (155 / 255) (203 / 255) 1 1
+                rgba (155 / 255) (203 / 255) 1 1
             , offset = ( 0, 0 )
             , blur = 0
             , size = 3
@@ -3253,16 +3248,16 @@ floatClass x =
 
 
 formatColor : Color -> String
-formatColor (Rgba red green blue alpha) =
-    "rgba("
-        ++ String.fromInt (round (red * 255))
-        ++ ("," ++ String.fromInt (round (green * 255)))
-        ++ ("," ++ String.fromInt (round (blue * 255)))
-        ++ ("," ++ String.fromFloat alpha ++ ")")
+formatColor color =
+    toCssString color
 
 
 formatColorClass : Color -> String
-formatColorClass (Rgba red green blue alpha) =
+formatColorClass color =
+    let
+        { red, green, blue, alpha } =
+            toRgba color
+    in
     floatClass red
         ++ "-"
         ++ floatClass green

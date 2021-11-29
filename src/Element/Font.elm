@@ -65,7 +65,8 @@ module Element.Font exposing
 
 -}
 
-import Element exposing (Attr, Attribute, Color)
+import Color exposing (Color)
+import Element exposing (Attr, Attribute)
 import Internal.Flag as Flag
 import Internal.Model as Internal
 import Internal.Style exposing (classes)
